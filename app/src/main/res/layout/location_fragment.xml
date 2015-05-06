@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:hint="Location Name"
+        android:layout_above="@+id/saveBtn"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:id="@+id/saveBtn"
+        android:layout_alignTop="@+id/deleteBtn"
+        android:layout_alignEnd="@+id/editText"
+        android:padding="10dp" />
+
+    <Button
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:id="@+id/deleteBtn"
+        android:padding="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/fragment" />
+
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:name="cmsc491.myplacelist.fragments.MPLGoogleMapFragment"
+        android:id="@+id/fragment"
+        android:layout_above="@+id/editText"
+        android:layout_alignParentTop="true" />
+</RelativeLayout>

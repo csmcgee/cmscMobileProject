@@ -6,10 +6,10 @@
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"
-        android:hint="Location Name"
-        android:layout_above="@+id/saveBtn"
-        android:layout_centerHorizontal="true" />
+        android:id="@+id/locationName"
+        android:layout_above="@+id/lngInput"
+        android:layout_alignEnd="@+id/mplFragment_container"
+        android:layout_toEndOf="@+id/locationNameLabel" />
 
     <Button
         android:layout_width="175dp"
@@ -17,7 +17,7 @@
         android:text="Save"
         android:id="@+id/saveBtn"
         android:layout_alignTop="@+id/deleteBtn"
-        android:layout_alignEnd="@+id/editText"
+        android:layout_alignEnd="@+id/locationName"
         android:padding="10dp" />
 
     <Button
@@ -27,13 +27,76 @@
         android:id="@+id/deleteBtn"
         android:padding="10dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/fragment" />
+        android:layout_alignStart="@+id/mplFragment_container" />
 
-    <fragment
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        android:name="cmsc491.myplacelist.fragments.MPLGoogleMapFragment"
-        android:id="@+id/fragment"
-        android:layout_above="@+id/editText"
-        android:layout_alignParentTop="true" />
+        android:id="@+id/mplFragment_container"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/locationName">
+    </RelativeLayout>
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/locationFragProgress"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible" />
+
+    <TextView
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Lat:"
+        android:id="@+id/latLabel"
+        android:layout_alignTop="@+id/latInput"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/latInput"
+        android:textSize="12dp"
+        android:layout_above="@+id/deleteBtn" />
+
+    <TextView
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Lng:"
+        android:id="@+id/yCoordLabel"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:layout_alignTop="@+id/lngInput"
+        android:layout_alignStart="@+id/saveBtn"
+        android:layout_alignBottom="@+id/lngInput"
+        android:layout_toStartOf="@+id/lngInput"
+        android:textSize="12dp" />
+
+    <EditText
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/lngInput"
+        android:layout_above="@+id/saveBtn"
+        android:layout_alignEnd="@+id/saveBtn" />
+
+    <EditText
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/latInput"
+        android:layout_above="@+id/deleteBtn"
+        android:layout_alignEnd="@+id/deleteBtn" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Name:"
+        android:id="@+id/locationNameLabel"
+        android:layout_alignTop="@+id/locationName"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/latLabel"
+        android:gravity="center|center_vertical" />
+
 </RelativeLayout>

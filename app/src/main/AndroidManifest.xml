@@ -28,7 +28,7 @@
         </activity>
         <activity
             android:name=".HomeActivity"
-            android:label="@string/title_activity_home" >
+            android:label="Home" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,6 +39,14 @@
             android:name=".RegistrationActivity"
             android:label="@string/title_activity_registration"
             android:parentActivityName=".LoginActivity">
+        </activity>
+        <activity android:name=".LocationEditActivity"
+            android:label="Location Settings"
+            android:parentActivityName=".HomeActivity">
+        </activity>
+        <activity android:name=".PlaceCUDActivity"
+            android:label="Add Place"
+            android:parentActivityName=".HomeActivity">
         </activity>
     </application>
 

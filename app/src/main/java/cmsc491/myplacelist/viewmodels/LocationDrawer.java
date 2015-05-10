@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.parse.FindCallback;
+
 import java.util.ArrayList;
 
 import cmsc491.myplacelist.R;
@@ -14,19 +16,10 @@ import cmsc491.myplacelist.models.Location;
 
 public class LocationDrawer {
     public static final int ADD_ID = 99999;
-    public static Location addLocation = new Location(ADD_ID, "Add Location", 0, 0);
-    public static ArrayList<Location> locations = getUserLocations();
-
-    public static ArrayList<Location> getUserLocations(){
-        // Retrieve user saved locations
-        ArrayList<Location> locs = new ArrayList<Location>();
-        locs.add(addLocation);
-        return locs;
-    }
-
-    public static Location getLocation(int index){
-        return locations.get(index);
-    }
+    public static final int SETTINGS_ID = 98989;
+    public static Location addLocation = new Location(ADD_ID, "Add Location", new Double(0), new Double(0));
+    public static Location settingsLocation = new Location(SETTINGS_ID, "Settings", new Double(0), new Double(0));
+    public static ArrayList<Location> locations;
 
     public static class LAdapter extends ArrayAdapter<Location>{
         private ArrayList<Location> locations;
@@ -36,7 +29,7 @@ public class LocationDrawer {
         }
 
         public long getItemId(int position){
-            return locations.get(position).id;
+            return locations.get(position).getId();
         }
 
         public View getView(int position, View convertView, ViewGroup parent){
@@ -47,7 +40,7 @@ public class LocationDrawer {
             Location i = locations.get(position);
             if(i != null){
                 TextView name = (TextView) convertView.findViewById(R.id.drawerItemName);
-                name.setText(i.name);
+                name.setText(i.getName());
             }
 
             return convertView;

@@ -146,6 +146,13 @@ public class PlaceCUDActivity extends ActionBarActivity{
         public boolean onMapReady(GoogleMap map) {
             return true;
         }
+
+        @Override
+        public void afterSearch() {
+            Location selectedLocation = (Location) mSpinner.getSelectedItem();
+            LatLng coordinates = new LatLng(selectedLocation.getLat(), selectedLocation.getLng());
+            mplFragment.addMarker(selectedLocation.getName(), coordinates);
+        }
     }
 
     private class SavePlaceEvent implements View.OnClickListener {
@@ -253,6 +260,8 @@ public class PlaceCUDActivity extends ActionBarActivity{
 
         return new Place(location, name, lat, lng, notes);
     }
+
+
 
 
 }

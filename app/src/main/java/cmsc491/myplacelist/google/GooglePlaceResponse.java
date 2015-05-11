@@ -11,6 +11,8 @@ public class GooglePlaceResponse {
             this.formatted_address = address;
             this.name = name;
         }
+
+        public String place_id;
         public Geometry geometry;
         public String id;
         public String formatted_address;

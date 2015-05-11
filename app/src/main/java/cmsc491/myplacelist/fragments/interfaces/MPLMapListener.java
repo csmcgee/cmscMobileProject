@@ -10,4 +10,7 @@ public interface MPLMapListener {
      * Return false if you don't want default steps to occur.
      */
     public boolean onMapReady(GoogleMap map);
+
+
+    public void afterSearch();
 }

@@ -157,5 +157,10 @@ public class LocationFragment extends MPLFragmentBase {
 
             return true;
         }
+
+        @Override
+        public void afterSearch() {
+
+        }
     }
 }

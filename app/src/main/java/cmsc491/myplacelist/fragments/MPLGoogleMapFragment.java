@@ -176,6 +176,9 @@ public class MPLGoogleMapFragment extends Fragment implements OnMapReadyCallback
 
             progressBar.setVisibility(View.INVISIBLE);
 
+            if(listener != null)
+                listener.afterSearch();
+
             // Zoom to fit all markers
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(builder.build(), 100);
             gMap.animateCamera(cu);

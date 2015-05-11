@@ -34,4 +34,11 @@
         android:focusableInTouchMode="false"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/searchText"
+        android:layout_alignParentStart="true"
+        android:id="@+id/scroll_blocker_frame"></FrameLayout>
 </RelativeLayout>

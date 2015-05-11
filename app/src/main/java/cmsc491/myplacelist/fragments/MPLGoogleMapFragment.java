@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -40,6 +41,9 @@ public class MPLGoogleMapFragment extends Fragment implements OnMapReadyCallback
     private Marker currentPosMarker;
     private LatLng currentPosition;
     private ProgressBar progressBar;
+    private FrameLayout scrollBlocker;
+    private View.OnTouchListener onTouchListener;
+    private LatLng searchPosition;
 
     public void setMPLMapListener(MPLMapListener listener){
         this.listener = listener;
@@ -52,6 +56,8 @@ public class MPLGoogleMapFragment extends Fragment implements OnMapReadyCallback
         searchBtn = (Button) v.findViewById(R.id.searchBtn);
         searchText = (EditText) v.findViewById(R.id.searchText);
         progressBar = (ProgressBar) v.findViewById(R.id.searchProgress);
+        scrollBlocker = (FrameLayout) v.findViewById(R.id.scroll_blocker_frame);
+        scrollBlocker.setOnTouchListener(onTouchListener);
 
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +77,10 @@ public class MPLGoogleMapFragment extends Fragment implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
+    public void setScrollBlocker(View.OnTouchListener onTouchListener){
+        this.onTouchListener = onTouchListener;
+    }
+
     public void addMarker(String name, LatLng coordinates){
         gMap.addMarker(new MarkerOptions()
         .position(coordinates)
@@ -80,6 +90,22 @@ public class MPLGoogleMapFragment extends Fragment implements OnMapReadyCallback
         gMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
         gMap.moveCamera(CameraUpdateFactory.zoomTo(11));
 
+    }
+
+    public void clearMap(){
+        gMap.clear();
+        // Get last known location from GPS, if null then network provider
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if(location == null)
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        if(location != null) {
+            LatLng myCoordinates = new LatLng(location.getLatitude(), location.getLongitude());
+            currentPosMarker = gMap.addMarker(new MarkerOptions()
+                    .position(myCoordinates)
+                    .title("Current Location"));
+            currentPosition = currentPosMarker.getPosition();
+        }
     }
 
     @Override
@@ -107,18 +133,24 @@ public class MPLGoogleMapFragment extends Fragment implements OnMapReadyCallback
                     .title("Current Location"));
             currentPosition = currentPosMarker.getPosition();
 
-        if(listener == null || listener.onMapReady()){
+        if(listener == null || listener.onMapReady(gMap)){
                 gMap.moveCamera(CameraUpdateFactory.newLatLng(myCoordinates));
                 gMap.moveCamera(CameraUpdateFactory.zoomTo(11));
             }
         }
     }
 
+    public void setSearchPosition(LatLng coords){
+        searchPosition = coords;
+    }
+
     private class GoogleSearchRequestTask extends AsyncTask<String, Integer, String> {
         @Override
         protected String doInBackground(String... queries) {
             GoogleSearchAO search = new GoogleSearchAO();
-            String response = search.searchPlaces(queries[0], currentPosition.latitude, currentPosition.longitude);
+            if(searchPosition == null)
+                searchPosition = new LatLng(currentPosition.latitude, currentPosition.longitude);
+            String response = search.searchPlaces(queries[0], searchPosition.latitude, searchPosition.longitude);
             return response;
         }
 

@@ -24,29 +24,47 @@
             android:value="AIzaSyCWwsCP8Py9c8lVvHoRLwfY12JjOWRA6Pc"/>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".HomeActivity"
-            android:label="Home" >
+            android:label="My Place List"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".RegistrationActivity"
             android:label="@string/title_activity_registration"
-            android:parentActivityName=".LoginActivity">
+            android:windowSoftInputMode="stateHidden"
+            android:parentActivityName=".LoginActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".LocationEditActivity"
+            android:windowSoftInputMode="stateHidden"
             android:label="Location Settings"
-            android:parentActivityName=".HomeActivity">
+            android:parentActivityName=".HomeActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".PlaceCUDActivity"
             android:label="Add Place"
-            android:parentActivityName=".HomeActivity">
+            android:windowSoftInputMode="stateHidden"
+            android:parentActivityName=".HomeActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".PlaceViewActivity"
+            android:label="Place View"
+            android:parentActivityName=".HomeActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

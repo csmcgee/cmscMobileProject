@@ -2,7 +2,6 @@ package cmsc491.myplacelist;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Handler;
@@ -15,10 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -38,16 +34,18 @@ public class HomeActivity extends ActionBarActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-    private ArrayList<Location> locations = new ArrayList<>();
     public static LocationDrawer.LAdapter lAdapter;
+    private long selectedId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        if(ParseUser.getCurrentUser() == null)
+        if(ParseUser.getCurrentUser() == null){
             navigateToLogin();
+            return;
+        }
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -59,11 +57,11 @@ public class HomeActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        updateDrawer();
-
+        initializeActivity();
     }
 
-    public void updateDrawer(){
+    public void initializeActivity(){
+        selectedId = -1; // for add location bug
         setProgressBarIndeterminateVisibility(true);
         Location.getUserLocations(new FindCallback<Location>() {
             @Override
@@ -79,6 +77,19 @@ public class HomeActivity extends ActionBarActivity {
                         lAdapter.add(LocationDrawer.addLocation);
                         lAdapter.add(LocationDrawer.settingsLocation);
                         lAdapter.notifyDataSetChanged();
+
+                        Fragment fragment;
+                        if(results.size() == 0){
+                            fragment = new LocationFragment();
+                            getSupportActionBar().setTitle("Add Location");
+                        } else {
+                            Bundle args = new Bundle();
+                            fragment = new PlaceListFragment();
+                            args.putString(PlaceListFragment.LOC_ID_ARG, lAdapter.getItem(0).getObjectId());
+                            fragment.setArguments(args);
+                            getSupportActionBar().setTitle(String.format("%s Places", lAdapter.getItem(0).getName()));
+                        }
+                        changeFragments(fragment);
                     }
                 });
             }
@@ -132,18 +143,7 @@ public class HomeActivity extends ActionBarActivity {
                 break;
         }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_logout) {
-            ParseUser.logOut();
-            navigateToLogin();
-        }
-
         return super.onOptionsItemSelected(item);
-    }
-
-    protected void onPostCreate(Bundle savedInstanceState){
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
     }
 
     public void onConfigurationChanged(Configuration newConfig){
@@ -151,8 +151,13 @@ public class HomeActivity extends ActionBarActivity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+    protected void onPostCreate(Bundle savedInstanceState){
+        super.onPostCreate(savedInstanceState);
+        if(mDrawerToggle != null)
+            mDrawerToggle.syncState();
+    }
+
     private class LocationDIClickListener implements ListView.OnItemClickListener{
-        private long selectedId = -1;
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if(id == selectedId){
@@ -178,19 +183,19 @@ public class HomeActivity extends ActionBarActivity {
             changeFragments(fragment);
 
         }
+    }
 
-        public void changeFragments(final Fragment fragment){
-            mDrawerLayout.closeDrawer(mDrawerList);
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.content_frame, fragment)
-                            .commit();
-                }
-            }, 250);
-        }
+    private void changeFragments(final Fragment fragment){
+        mDrawerLayout.closeDrawer(mDrawerList);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                FragmentManager fragmentManager = getFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.content_frame, fragment)
+                        .commit();
+            }
+        }, 250);
     }
 }

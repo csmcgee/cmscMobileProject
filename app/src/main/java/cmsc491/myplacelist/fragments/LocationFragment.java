@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.parse.DeleteCallback;
@@ -79,6 +80,11 @@ public class LocationFragment extends MPLFragmentBase {
 
             @Override
             public void onClick(View v) {
+                if(!locationFromLoad){
+                    ((HomeActivity)getActivity()).initializeActivity();
+                    return;
+                }
+
                 progressBar.setVisibility(View.VISIBLE);
                 location.deleteInBackground(new DeleteCallback() {
                     @Override
@@ -142,7 +148,7 @@ public class LocationFragment extends MPLFragmentBase {
         }
 
         @Override
-        public boolean onMapReady() {
+        public boolean onMapReady(GoogleMap map) {
             if(location != null){
                 LatLng coordinates = new LatLng(location.getLat(), location.getLng());
                 mplFrag.addMarker(location.getName(), coordinates);

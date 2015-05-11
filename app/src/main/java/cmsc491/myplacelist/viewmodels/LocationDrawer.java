@@ -1,12 +1,15 @@
 package cmsc491.myplacelist.viewmodels;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.parse.FindCallback;
 
 import java.util.ArrayList;
@@ -21,7 +24,7 @@ public class LocationDrawer {
     public static Location settingsLocation = new Location(SETTINGS_ID, "Settings", new Double(0), new Double(0));
     public static ArrayList<Location> locations;
 
-    public static class LAdapter extends ArrayAdapter<Location>{
+    public static class LAdapter extends ArrayAdapter<Location> {
         private ArrayList<Location> locations;
         public LAdapter(Context context, int resource, ArrayList<Location> locations) {
             super(context, resource, locations);
@@ -40,6 +43,10 @@ public class LocationDrawer {
             Location i = locations.get(position);
             if(i != null){
                 TextView name = (TextView) convertView.findViewById(R.id.drawerItemName);
+                ImageView imageView = (ImageView) convertView.findViewById(R.id.itemIcon);
+                TextDrawable circle = TextDrawable.builder()
+                        .buildRoundRect(i.getName().substring(0,1), i.getColor(), 35);
+                imageView.setImageDrawable(circle);
                 name.setText(i.getName());
             }
 

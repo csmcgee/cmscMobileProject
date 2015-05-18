@@ -16,6 +16,7 @@ public class Place extends ParseObject {
     public static final String LATITUDE = "lat";
     public static final String LONGITUDE = "lng";
     public static final String NOTES = "notes";
+    public static final String GOOGLE_PLACE_ID = "google_place_id";
 
     public Place(){}
 
@@ -48,6 +49,14 @@ public class Place extends ParseObject {
 
     public Location getLocation(){
         return (Location) getParseObject(LOCATION);
+    }
+
+    public String getGooglePlaceID(){
+        return getString(GOOGLE_PLACE_ID);
+    }
+
+    public void setGooglePlaceId(String gpid){
+        put(GOOGLE_PLACE_ID, gpid);
     }
 
     public String getName(){

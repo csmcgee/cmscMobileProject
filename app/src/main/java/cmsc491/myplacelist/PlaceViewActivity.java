@@ -1,25 +1,26 @@
 package cmsc491.myplacelist;
 
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 
+import cmsc491.myplacelist.fragments.MPLGooglePlaceDetailsFragment;
 import cmsc491.myplacelist.models.Place;
 
 public class PlaceViewActivity extends ActionBarActivity implements OnMapReadyCallback {
@@ -78,6 +79,13 @@ public class PlaceViewActivity extends ActionBarActivity implements OnMapReadyCa
                     mPlaceName.setText(place.getName());
                     mPlaceNotes.setText(place.getNotes());
                     setMapMarker(activityPlace.getLat(), activityPlace.getLng());
+
+                    if(place.getGooglePlaceID() != null && !place.getGooglePlaceID().isEmpty()){
+                        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                        MPLGooglePlaceDetailsFragment mplGPDF = new MPLGooglePlaceDetailsFragment();
+                        mplGPDF.setPlaceId(place.getGooglePlaceID());
+                        transaction.add(R.id.placeViewGPDContainer,mplGPDF).commit();
+                    }
                 }
             }
         });

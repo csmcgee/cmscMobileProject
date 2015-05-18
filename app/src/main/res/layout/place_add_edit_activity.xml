@@ -51,7 +51,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/placeNameField"
         android:layout_below="@+id/placeMPLMapContainer"
-        android:layout_toEndOf="@+id/textView" />
+        android:layout_toEndOf="@+id/textView"
+        android:singleLine="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -70,7 +71,8 @@
         android:id="@+id/placeLatField"
         android:layout_below="@+id/textView"
         android:layout_toRightOf="@+id/textView2"
-        android:layout_toStartOf="@+id/textView4" />
+        android:layout_toStartOf="@+id/textView4"
+        android:singleLine="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -88,7 +90,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/placeLngField"
         android:layout_alignBottom="@+id/textView4"
-        android:layout_toEndOf="@+id/textView4" />
+        android:layout_toEndOf="@+id/textView4"
+        android:singleLine="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -101,7 +104,7 @@
 
     <EditText
         android:layout_width="wrap_content"
-        android:layout_height="75dp"
+        android:layout_height="wrap_content"
         android:inputType="textMultiLine"
         android:ems="10"
         android:id="@+id/placeNotesField"
@@ -114,10 +117,9 @@
         android:layout_height="wrap_content"
         android:text="Cancel"
         android:id="@+id/negPlaceBtn"
-        android:layout_below="@+id/placeNotesField"
+        android:layout_below="@+id/googlePlaceDetailsEditContainer"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="17dp"
-        android:layout_toStartOf="@+id/textView4" />
+        android:layout_alignEnd="@+id/placeLatField" />
 
     <Button
         android:layout_width="wrap_content"
@@ -127,6 +129,22 @@
         android:layout_alignTop="@+id/negPlaceBtn"
         android:layout_alignParentEnd="true"
         android:layout_alignStart="@+id/placeLngField" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Include Google Place Details"
+        android:id="@+id/placeIncludeDetails"
+        android:layout_below="@+id/placeNotesField"
+        android:layout_alignParentStart="true"
+        android:checked="false" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/placeIncludeDetails"
+        android:layout_alignParentStart="true"
+        android:id="@+id/googlePlaceDetailsEditContainer"></RelativeLayout>
 
 </RelativeLayout>
 

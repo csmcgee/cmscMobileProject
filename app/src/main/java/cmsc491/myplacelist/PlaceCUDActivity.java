@@ -11,6 +11,8 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -30,6 +32,7 @@ import com.parse.SaveCallback;
 import java.util.List;
 
 import cmsc491.myplacelist.fragments.MPLGoogleMapFragment;
+import cmsc491.myplacelist.fragments.MPLGooglePlaceDetailsFragment;
 import cmsc491.myplacelist.fragments.interfaces.MPLMapListener;
 import cmsc491.myplacelist.models.Location;
 import cmsc491.myplacelist.models.Place;
@@ -43,12 +46,16 @@ public class PlaceCUDActivity extends ActionBarActivity{
     private ArrayAdapter<Location> spinLocationAdapter;
     private Activity self;
     private EditText mPlaceName, mPlaceLat, mPlaceLng, mPlaceNotes;
+    private CheckBox mPlaceDetailsCheckbox;
     private Button mNegBtn, mPosBtn;
     private ScrollView scrollView;
     public static final String PLACE_ID = "placeID";
     private boolean edit_state;
     private Intent mIntent;
     private Place selectedPlace;
+    private RelativeLayout googlePlaceDetailsContainer;
+    private MPLGooglePlaceDetailsFragment mplGPDF;
+    private String selectedMarkerPlaceId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,10 +109,26 @@ public class PlaceCUDActivity extends ActionBarActivity{
         mPlaceNotes = (EditText) findViewById(R.id.placeNotesField);
         mNegBtn = (Button) findViewById(R.id.negPlaceBtn);
         mPosBtn = (Button) findViewById(R.id.posPlaceBtn);
+        mPlaceDetailsCheckbox = (CheckBox) findViewById(R.id.placeIncludeDetails);
+        googlePlaceDetailsContainer = (RelativeLayout) findViewById(R.id.googlePlaceDetailsEditContainer);
         mIntent = getIntent();
         mPosBtn.setOnClickListener(new SavePlaceEvent());
         mNegBtn.setOnClickListener(new NegButtonCallback());
         mSpinner.setOnItemSelectedListener(new LocationSpinnerSelectListener());
+        mPlaceDetailsCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                if(!isChecked){
+                    if(mplGPDF != null)
+                        transaction.remove(mplGPDF).commit();
+                } else {
+                    mplGPDF = new MPLGooglePlaceDetailsFragment();
+                    mplGPDF.setPlaceId(selectedMarkerPlaceId);
+                    transaction.add(R.id.googlePlaceDetailsEditContainer,mplGPDF).commit();
+                }
+            }
+        });
         edit_state = false;
     }
 
@@ -126,6 +149,12 @@ public class PlaceCUDActivity extends ActionBarActivity{
                     mNegBtn.setText("Delete");
                     selectedPlace = place;
 
+                    if(selectedPlace.getGooglePlaceID() != null && !selectedPlace.getGooglePlaceID().isEmpty()){
+                        selectedMarkerPlaceId = selectedPlace.getGooglePlaceID();
+                        mPlaceDetailsCheckbox.setChecked(true);
+                    }
+
+
                     LatLng coordinates = new LatLng(selectedPlace.getLat(), selectedPlace.getLng());
                     mplFragment.addMarker(selectedPlace.getName(), coordinates);
                 }
@@ -140,6 +169,8 @@ public class PlaceCUDActivity extends ActionBarActivity{
             mPlaceName.setText(marker.getTitle());
             mPlaceLat.setText(String.format("%.8f", marker.getPosition().latitude));
             mPlaceLng.setText(String.format("%.8f", marker.getPosition().longitude));
+            selectedMarkerPlaceId = mplFragment.getPlaceIdByMarker(marker);
+            mPlaceDetailsCheckbox.setChecked(false);
         }
 
         @Override
@@ -167,6 +198,8 @@ public class PlaceCUDActivity extends ActionBarActivity{
                 selectedPlace.setLng(Double.parseDouble(mPlaceLng.getText().toString()));
                 selectedPlace.setNotes(mPlaceNotes.getText().toString());
                 selectedPlace.setLocation(place.getLocation());
+                selectedPlace.setGooglePlaceId(place.getGooglePlaceID());
+
                 selectedPlace.saveInBackground(new SavePlaceCallback());
             }
             else
@@ -257,8 +290,11 @@ public class PlaceCUDActivity extends ActionBarActivity{
         Double lat = Double.parseDouble(mPlaceLat.getText().toString());
         Double lng = Double.parseDouble(mPlaceLng.getText().toString());
         String notes = mPlaceNotes.getText().toString();
+        Place place = new Place(location, name, lat, lng, notes);
 
-        return new Place(location, name, lat, lng, notes);
+        if(mPlaceDetailsCheckbox.isChecked())
+            place.setGooglePlaceId(selectedMarkerPlaceId);
+        return place;
     }
 
 

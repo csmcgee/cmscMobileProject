@@ -11,11 +11,34 @@ public class GoogleSearchAO {
 
     private static final String API_KEY = "AIzaSyActXAVulKOryAr7XHTiYazqts0zOepouo";
     public static final String GOOGLE_URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?key=" + API_KEY;
-
+    public static final String GOOGLE_PLACE_URL = "https://maps.googleapis.com/maps/api/place/details/json?key="+ API_KEY;
     public String searchPlaces(String query, double lat, double lng) {
         try {
             query = URLEncoder.encode(query, "UTF-8");
             String full_url = String.format("%s&query=%s&location=%.6f,%.6f&radius=50000", GOOGLE_URL, query, lat, lng);
+            URL url = new URL(full_url);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+
+            String line;
+            while((line = in.readLine()) != null)
+                sb.append(line);
+
+            connection.disconnect();
+            return sb.toString();
+
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String getPlaceDetailsById(String placeId){
+        try {
+            placeId = URLEncoder.encode(placeId, "UTF-8");
+            String full_url = String.format("%s&placeid=%s", GOOGLE_PLACE_URL, placeId);
             URL url = new URL(full_url);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 

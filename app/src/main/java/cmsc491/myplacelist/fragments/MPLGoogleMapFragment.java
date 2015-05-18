@@ -27,6 +27,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
+import java.util.HashMap;
+
 import cmsc491.myplacelist.R;
 import cmsc491.myplacelist.fragments.interfaces.MPLMapListener;
 import cmsc491.myplacelist.google.GooglePlaceResponse;
@@ -44,6 +46,7 @@ public class MPLGoogleMapFragment extends Fragment implements OnMapReadyCallback
     private FrameLayout scrollBlocker;
     private View.OnTouchListener onTouchListener;
     private LatLng searchPosition;
+    private HashMap<Marker, String> placeIdMarkerMap;
 
     public void setMPLMapListener(MPLMapListener listener){
         this.listener = listener;
@@ -58,6 +61,7 @@ public class MPLGoogleMapFragment extends Fragment implements OnMapReadyCallback
         progressBar = (ProgressBar) v.findViewById(R.id.searchProgress);
         scrollBlocker = (FrameLayout) v.findViewById(R.id.scroll_blocker_frame);
         scrollBlocker.setOnTouchListener(onTouchListener);
+        placeIdMarkerMap = new HashMap<Marker, String>();
 
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +93,10 @@ public class MPLGoogleMapFragment extends Fragment implements OnMapReadyCallback
 
         gMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
         gMap.moveCamera(CameraUpdateFactory.zoomTo(11));
+    }
 
+    public String getPlaceIdByMarker(Marker marker){
+        return placeIdMarkerMap.get(marker);
     }
 
     public void clearMap(){
@@ -164,14 +171,17 @@ public class MPLGoogleMapFragment extends Fragment implements OnMapReadyCallback
                     .title(currentPosMarker.getTitle()));
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             builder.include(currentPosMarker.getPosition());
+            placeIdMarkerMap.clear();
 
             // Add all places returned from response
             for(int i = 0; i < response.results.size(); i++){
                 GooglePlaceResponse.Place place = response.results.get(i);
                 LatLng coordinates = new LatLng(place.geometry.location.lat, place.geometry.location.lng);
                 builder.include(coordinates);
-                MarkerOptions marker = buildGooglePlaceMarker(place, coordinates);
-                gMap.addMarker(marker);
+                MarkerOptions markerOptions = buildGooglePlaceMarker(place, coordinates);
+
+                Marker marker = gMap.addMarker(markerOptions);
+                placeIdMarkerMap.put(marker, place.place_id);
             }
 
             progressBar.setVisibility(View.INVISIBLE);

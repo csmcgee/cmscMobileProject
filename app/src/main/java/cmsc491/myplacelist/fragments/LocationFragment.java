@@ -21,6 +21,7 @@ import com.parse.SaveCallback;
 import cmsc491.myplacelist.HomeActivity;
 import cmsc491.myplacelist.R;
 import cmsc491.myplacelist.fragments.interfaces.MPLMapListener;
+import cmsc491.myplacelist.geofence.GeofenceWrapper;
 import cmsc491.myplacelist.models.Location;
 
 public class LocationFragment extends MPLFragmentBase {
@@ -70,6 +71,7 @@ public class LocationFragment extends MPLFragmentBase {
                     location.setLat(lat);
                     location.setLng(lng);
                     location.saveInBackground(new SaveLocationCallback());
+
                 }else{
                     Location.saveLocation(name, lat, lng, new SaveLocationCallback());
                 }

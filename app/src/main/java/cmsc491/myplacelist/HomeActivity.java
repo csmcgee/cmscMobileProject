@@ -3,6 +3,7 @@ package cmsc491.myplacelist;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
@@ -16,6 +17,8 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.google.android.gms.location.Geofence;
+
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -26,8 +29,10 @@ import java.util.List;
 import cmsc491.myplacelist.fragments.LocationFragment;
 import cmsc491.myplacelist.fragments.LocationListFragment;
 import cmsc491.myplacelist.fragments.PlaceListFragment;
+import cmsc491.myplacelist.geofence.GeofenceWrapper;
 import cmsc491.myplacelist.models.Location;
 import cmsc491.myplacelist.viewmodels.LocationDrawer;
+import cmsc491.myplacelist.domain.MPLConsts;
 
 
 public class HomeActivity extends ActionBarActivity {
@@ -36,6 +41,9 @@ public class HomeActivity extends ActionBarActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     public static LocationDrawer.LAdapter lAdapter;
     private long selectedId = -1;
+    private ArrayList<Geofence> mGeofenceList;
+    //private GeofenceControlPanel geoPanel;
+    private Context currentContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +55,9 @@ public class HomeActivity extends ActionBarActivity {
             return;
         }
 
+
+
+
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         lAdapter = new LocationDrawer.LAdapter(this, R.layout.location_drawer_item, new ArrayList<Location>());
@@ -57,18 +68,39 @@ public class HomeActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        //initialize geofence list
+        mGeofenceList = new ArrayList<Geofence>();
+
+        // Create new Geofences Control Panel
+        //geoPanel = new GeofenceControlPanel(this);
+        GeofenceWrapper.initialize(this);
+
+
         initializeActivity();
     }
 
     public void initializeActivity(){
         selectedId = -1; // for add location bug
         setProgressBarIndeterminateVisibility(true);
+        currentContext = this;
         Location.getUserLocations(new FindCallback<Location>() {
             @Override
             public void done(final List<Location> results, ParseException e) {
                 setProgressBarIndeterminateVisibility(false);
                 if(e != null)
                     return;
+
+                for(Location location: results){
+//                    double lat = location.getLat();
+//                    double lon = location.getLng();
+//                    String title = location.getName();
+//                    String snip = "";
+//                    GooglePlaceResponse.Place place = new GooglePlaceResponse.Place(title, snip, lat, lon);
+                    GeofenceWrapper.addFence(getApplicationContext(), location, MPLConsts.BENCHMARK_DISTANCE);
+                    //geoPanel.addGeofencesMarkerChosen(getApplicationContext(), place, PPConsts.BENCHMARK_DISTANCE);
+
+
+                }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -78,7 +110,12 @@ public class HomeActivity extends ActionBarActivity {
                         lAdapter.add(LocationDrawer.settingsLocation);
                         lAdapter.notifyDataSetChanged();
 
+                        if(setLocationFragment()){
+                            return;
+                        }
+
                         Fragment fragment;
+
                         if(results.size() == 0){
                             fragment = new LocationFragment();
                             getSupportActionBar().setTitle("Add Location");
@@ -89,11 +126,32 @@ public class HomeActivity extends ActionBarActivity {
                             fragment.setArguments(args);
                             getSupportActionBar().setTitle(String.format("%s Places", lAdapter.getItem(0).getName()));
                         }
-                        changeFragments(fragment);
+                        //changeFragments(fragment);
                     }
                 });
             }
         });
+    }
+
+
+
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        Intent intent = getIntent();
+//        String locationID = intent.getStringExtra(PPConsts.LOC_NAME);
+//        setLocationFragment(locationID);
+//    }
+
+    protected void onStart(){
+        super.onStart();
+        GeofenceWrapper.connectClient();
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        GeofenceWrapper.disconnectClient();
     }
 
     public Location getLocationFromDrawer(int position){
@@ -183,6 +241,28 @@ public class HomeActivity extends ActionBarActivity {
             changeFragments(fragment);
 
         }
+    }
+
+    public boolean setLocationFragment(){
+        Intent intent = getIntent();
+        String locationID = intent.getStringExtra(MPLConsts.LOC_ID);
+        String name = intent.getStringExtra(MPLConsts.LOC_NAME);
+
+        if(locationID == null)
+            return false;
+
+        setLocationFragment(locationID, name);
+        return true;
+
+    }
+
+    private void setLocationFragment(String objectID, String name){
+        Bundle args = new Bundle();
+        Fragment fragment = new PlaceListFragment();
+        args.putString(PlaceListFragment.LOC_ID_ARG, objectID);
+        fragment.setArguments(args);
+        getSupportActionBar().setTitle(String.format("%s Places", name));
+        changeFragments(fragment);
     }
 
     private void changeFragments(final Fragment fragment){

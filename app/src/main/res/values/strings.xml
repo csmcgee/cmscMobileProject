@@ -7,4 +7,10 @@
     <string name="title_activity_registration">RegistrationActivity</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
+    <!--Geofence strings-->
+    <string name="geofence_transition_entered">Entered</string>
+    <string name="geofence_transition_dwelling">Dwelling</string>
+    <string name="geofence_transition_exited">Left</string>
+    <string name="unknown_geofence_transition">Unknown Transition</string>
+    <string name="notification_text">within 200 meters.</string>
 </resources>

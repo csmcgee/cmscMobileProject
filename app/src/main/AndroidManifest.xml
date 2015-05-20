@@ -66,6 +66,7 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait">
         </activity>
+        <service android:name=".geofence.GeofenceTransitionsIntentService"/>
     </application>
 
 </manifest>

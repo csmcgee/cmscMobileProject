@@ -78,10 +78,10 @@ public class GeofenceControlPanel implements GoogleApiClient.ConnectionCallbacks
 
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
         // calling addGeofences() and removeGeofences().
-        return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-//        mGeofencePendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.
-//                FLAG_UPDATE_CURRENT);
-//        return mGeofencePendingIntent;
+        //return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        mGeofencePendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.
+                FLAG_UPDATE_CURRENT);
+        return mGeofencePendingIntent;
     }
 
     public void addGeofencesMarkerChosen(Context context, List<Location> places, float distance) {
@@ -131,6 +131,15 @@ public class GeofenceControlPanel implements GoogleApiClient.ConnectionCallbacks
             // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.
             Log.i(TAG, "mGoogleApiClient SECURITY exception");
         }
+    }
+
+    public void clearFences(){
+        LocationServices.GeofencingApi.removeGeofences(
+                mGoogleApiClient,
+                // This is the same pending intent that was used in addGeofences().
+                mGeofencePendingIntent
+        ).setResultCallback(this); // Result processed in onResult().
+
     }
 
     @Override

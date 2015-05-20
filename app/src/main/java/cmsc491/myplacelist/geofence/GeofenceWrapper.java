@@ -36,6 +36,10 @@ public class GeofenceWrapper {
         controlPanel.addGeofencesMarkerChosen(context, places, distance);
     }
 
+    public static void clearFences(){
+        controlPanel.clearFences();
+    }
+
 
 
 }

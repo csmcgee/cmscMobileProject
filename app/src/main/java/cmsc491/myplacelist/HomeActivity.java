@@ -90,6 +90,7 @@ public class HomeActivity extends ActionBarActivity {
                 if(e != null)
                     return;
 
+
                 GeofenceWrapper.addFence(getApplicationContext(), results, MPLConsts.BENCHMARK_DISTANCE);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -124,14 +125,6 @@ public class HomeActivity extends ActionBarActivity {
     }
 
 
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        Intent intent = getIntent();
-//        String locationID = intent.getStringExtra(PPConsts.LOC_NAME);
-//        setLocationFragment(locationID);
-//    }
 
     protected void onStart(){
         super.onStart();

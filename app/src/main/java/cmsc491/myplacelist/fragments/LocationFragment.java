@@ -75,6 +75,7 @@ public class LocationFragment extends MPLFragmentBase {
                 }else{
                     Location.saveLocation(name, lat, lng, new SaveLocationCallback());
                 }
+
             }
         });
 
@@ -126,6 +127,7 @@ public class LocationFragment extends MPLFragmentBase {
             if(e == null){
                 Toast.makeText(getActivity(), "Save Successful", Toast.LENGTH_LONG).show();
                 if(!locationFromLoad) {
+                    GeofenceWrapper.clearFences();
                     Intent intent = new Intent(getActivity(), HomeActivity.class)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);

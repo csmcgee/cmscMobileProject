@@ -90,17 +90,7 @@ public class HomeActivity extends ActionBarActivity {
                 if(e != null)
                     return;
 
-                for(Location location: results){
-//                    double lat = location.getLat();
-//                    double lon = location.getLng();
-//                    String title = location.getName();
-//                    String snip = "";
-//                    GooglePlaceResponse.Place place = new GooglePlaceResponse.Place(title, snip, lat, lon);
-                    GeofenceWrapper.addFence(getApplicationContext(), location, MPLConsts.BENCHMARK_DISTANCE);
-                    //geoPanel.addGeofencesMarkerChosen(getApplicationContext(), place, PPConsts.BENCHMARK_DISTANCE);
-
-
-                }
+                GeofenceWrapper.addFence(getApplicationContext(), results, MPLConsts.BENCHMARK_DISTANCE);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -126,7 +116,7 @@ public class HomeActivity extends ActionBarActivity {
                             fragment.setArguments(args);
                             getSupportActionBar().setTitle(String.format("%s Places", lAdapter.getItem(0).getName()));
                         }
-                        //changeFragments(fragment);
+                        changeFragments(fragment);
                     }
                 });
             }

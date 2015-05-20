@@ -13,17 +13,18 @@ import android.util.Log;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
+import com.parse.GetCallback;
+import com.parse.ParseException;
 
 import java.util.List;
 
 import cmsc491.myplacelist.HomeActivity;
 import cmsc491.myplacelist.R;
 import cmsc491.myplacelist.domain.MPLConsts;
+import cmsc491.myplacelist.models.Location;
 
 public class GeofenceTransitionsIntentService extends IntentService {
 
-    public String name, id;
-//    public double lat, lng;
     protected static final String TAG = "geofence-transitions-service";
 
     public GeofenceTransitionsIntentService() {
@@ -45,20 +46,21 @@ public class GeofenceTransitionsIntentService extends IntentService {
             return;
         }
 
-        name = intent.getStringExtra(MPLConsts.LOC_NAME);
-        id = intent.getStringExtra(MPLConsts.LOC_ID);
-//        address = intent.getStringExtra(MPLConsts.PLACE_ADDR);
-//        lat = intent.getDoubleExtra(MPLConsts.PLACE_LAT, 0);
-//        lng = intent.getDoubleExtra(MPLConsts.PLACE_LNG, 0);
-
         // Get the transition type.
-        int geofenceTransition = geofencingEvent.getGeofenceTransition();
+        final int geofenceTransition = geofencingEvent.getGeofenceTransition();
 
         if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL ||
            geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
            geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
-            sendNotification(name, geofenceTransition);
+            Location.getLocationById(triggeringGeofences.get(0).getRequestId(), new GetCallback<Location>() {
+                @Override
+                public void done(Location location, ParseException e) {
+                    if(e != null)
+                        return;
+                    sendNotification(location, geofenceTransition);
+                }
+            });
         }
     }
 
@@ -75,12 +77,12 @@ public class GeofenceTransitionsIntentService extends IntentService {
         }
     }
 
-    private void sendNotification(String notificationDetails, int gfTransitionType) {
+    private void sendNotification(Location location, int gfTransitionType) {
         // Create an explicit content Intent that starts the main Activity.
         Intent notificationIntent = new Intent(getApplicationContext(), HomeActivity.class);
         notificationIntent.setAction(MPLConsts.GF_ACTION);
-        notificationIntent.putExtra(MPLConsts.LOC_NAME, name);
-        notificationIntent.putExtra(MPLConsts.LOC_ID, id);
+        notificationIntent.putExtra(MPLConsts.LOC_NAME, location.getName());
+        notificationIntent.putExtra(MPLConsts.LOC_ID, location.getObjectId());
 //        notificationIntent.putExtra(MPLConsts.PLACE_ADDR, address);
 //        notificationIntent.putExtra(MPLConsts.PLACE_LAT, lat);
 //        notificationIntent.putExtra(MPLConsts.PLACE_LNG, lng);
@@ -111,7 +113,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(),
                         R.mipmap.ic_launcher))
                 .setColor(Color.RED)
-                .setContentTitle(notificationDetails)
+                .setContentTitle(location.getName())
                 .setContentText(contentText)
                 .setContentIntent(notificationPendingIntent);
 

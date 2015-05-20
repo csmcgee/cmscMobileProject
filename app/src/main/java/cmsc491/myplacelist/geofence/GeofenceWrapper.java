@@ -5,6 +5,7 @@ import android.content.Context;
 import com.google.android.gms.location.Geofence;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cmsc491.myplacelist.google.GooglePlaceResponse;
 import cmsc491.myplacelist.models.Location;
@@ -31,8 +32,8 @@ public class GeofenceWrapper {
         controlPanel.disconnectApiClient();
     }
 
-    public static void addFence(Context context, Location place, float distance){
-        controlPanel.addGeofencesMarkerChosen(context, place, distance);
+    public static void addFence(Context context, List<Location> places, float distance){
+        controlPanel.addGeofencesMarkerChosen(context, places, distance);
     }
 
 

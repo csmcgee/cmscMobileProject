@@ -63,28 +63,28 @@ public class GeofenceControlPanel implements GoogleApiClient.ConnectionCallbacks
         return builder.build();
     }
 
-    private PendingIntent getGeofencePendingIntent(Context context, Location place) {
+    private PendingIntent getGeofencePendingIntent(Context context) {
         // Reuse the PendingIntent if we already have it.
 //        if (mGeofencePendingIntent != null) {
 //            return mGeofencePendingIntent;
 //        }
         Intent intent = new Intent(context, GeofenceTransitionsIntentService.class);
-        intent.putExtra(MPLConsts.LOC_ID, place.getObjectId());
-        intent.putExtra(MPLConsts.LOC_NAME, place.getName());
+//        intent.putExtra(MPLConsts.LOC_ID, place.getObjectId());
+//        intent.putExtra(MPLConsts.LOC_NAME, place.getName());
+//        intent.putExtra("RANDOM", place.getObjectId().hashCode());
 //        intent.putExtra(PPConsts.PLACE_ADDR, place.formatted_address);
 //        intent.putExtra(PPConsts.PLACE_LAT, place.geometry.location.lat);
 //        intent.putExtra(PPConsts.PLACE_LNG, place.geometry.location.lng);
 
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
         // calling addGeofences() and removeGeofences().
-        return PendingIntent.getService(context, 0, intent, PendingIntent.
-                FLAG_UPDATE_CURRENT);
+        return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 //        mGeofencePendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.
 //                FLAG_UPDATE_CURRENT);
 //        return mGeofencePendingIntent;
     }
 
-    public void addGeofencesMarkerChosen(Context context, Location place, float distance) {
+    public void addGeofencesMarkerChosen(Context context, List<Location> places, float distance) {
         if (!mGoogleApiClient.isConnected()) {
             Log.i(TAG, "mGoogleApiClient not connected");
             return;
@@ -99,17 +99,19 @@ public class GeofenceControlPanel implements GoogleApiClient.ConnectionCallbacks
 
             // empty list
             //mGeofenceList = new ArrayList<Geofence>();
-            mGeofenceList.add(new Geofence.Builder()
-                    // Set the request ID of the geofence. This is a string to identify this
-                    // geofence.
-                    .setRequestId(place.getObjectId())
-                    .setCircularRegion(place.getLat(), place.getLng(), distance)
-                    .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                    .setLoiteringDelay(LOITERING_DELAY_SECS * MILLISECOND_MULTIPLIER)
-                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                            Geofence.GEOFENCE_TRANSITION_DWELL |
-                            Geofence.GEOFENCE_TRANSITION_EXIT)
-                    .build());
+            for(Location place: places){
+                mGeofenceList.add(new Geofence.Builder()
+                        // Set the request ID of the geofence. This is a string to identify this
+                        // geofence.
+                        .setRequestId(place.getObjectId())
+                        .setCircularRegion(place.getLat(), place.getLng(), distance)
+                        .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                        .setLoiteringDelay(LOITERING_DELAY_SECS * MILLISECOND_MULTIPLIER)
+                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                                Geofence.GEOFENCE_TRANSITION_DWELL |
+                                Geofence.GEOFENCE_TRANSITION_EXIT)
+                        .build());
+            }
 
             // keep track of geofence id request
             //geofenceIDs.add(mGeofenceList.get(mGeofenceList.size()-1).getRequestId());
@@ -123,7 +125,7 @@ public class GeofenceControlPanel implements GoogleApiClient.ConnectionCallbacks
                     // pending intent is used to generate an intent when a matched geofence
                     // transition is observed.
                     //mGeofencePendingIntent
-                    getGeofencePendingIntent(context, place)
+                    getGeofencePendingIntent(context)
             ).setResultCallback(this); // Result processed in onResult().
         } catch (SecurityException securityException) {
             // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.

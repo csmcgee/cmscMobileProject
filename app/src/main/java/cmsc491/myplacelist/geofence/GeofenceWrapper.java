@@ -32,8 +32,9 @@ public class GeofenceWrapper {
         controlPanel.disconnectApiClient();
     }
 
-    public static void addFence(Context context, List<Location> places, float distance){
-        controlPanel.addGeofencesMarkerChosen(context, places, distance);
+    public static void addFences(Context context, List<Location> places, float distance){
+        if(!places.isEmpty())
+            controlPanel.addGeofencesMarkerChosen(context, places, distance);
     }
 
     public static void clearFences(){

@@ -91,7 +91,7 @@ public class HomeActivity extends ActionBarActivity {
                     return;
 
 
-                GeofenceWrapper.addFence(getApplicationContext(), results, MPLConsts.BENCHMARK_DISTANCE);
+                GeofenceWrapper.addFences(getApplicationContext(), results, MPLConsts.BENCHMARK_DISTANCE);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

@@ -64,17 +64,8 @@ public class GeofenceControlPanel implements GoogleApiClient.ConnectionCallbacks
     }
 
     private PendingIntent getGeofencePendingIntent(Context context) {
-        // Reuse the PendingIntent if we already have it.
-//        if (mGeofencePendingIntent != null) {
-//            return mGeofencePendingIntent;
-//        }
         Intent intent = new Intent(context, GeofenceTransitionsIntentService.class);
-//        intent.putExtra(MPLConsts.LOC_ID, place.getObjectId());
-//        intent.putExtra(MPLConsts.LOC_NAME, place.getName());
-//        intent.putExtra("RANDOM", place.getObjectId().hashCode());
-//        intent.putExtra(PPConsts.PLACE_ADDR, place.formatted_address);
-//        intent.putExtra(PPConsts.PLACE_LAT, place.geometry.location.lat);
-//        intent.putExtra(PPConsts.PLACE_LNG, place.geometry.location.lng);
+
 
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
         // calling addGeofences() and removeGeofences().
@@ -113,10 +104,6 @@ public class GeofenceControlPanel implements GoogleApiClient.ConnectionCallbacks
                         .build());
             }
 
-            // keep track of geofence id request
-            //geofenceIDs.add(mGeofenceList.get(mGeofenceList.size()-1).getRequestId());
-           // getGeofencePendingIntent(context, place);
-
             LocationServices.GeofencingApi.addGeofences(
                     mGoogleApiClient,
                     // The GeofenceRequest object.
@@ -134,6 +121,8 @@ public class GeofenceControlPanel implements GoogleApiClient.ConnectionCallbacks
     }
 
     public void clearFences(){
+        if(mGeofencePendingIntent == null)
+            return;
         LocationServices.GeofencingApi.removeGeofences(
                 mGoogleApiClient,
                 // This is the same pending intent that was used in addGeofences().
